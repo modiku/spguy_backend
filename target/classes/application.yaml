@@ -1,14 +1,8 @@
 server:
-  port: 8080
-spring:
-  mvc:
-    view:
-      suffix: .html
-      prefix: /
-
+  port: 80   # 推荐和 Dockerfile EXPOSE 保持一致
 
 file:
   upload:
-    dir: uploads
+    dir: ./uploads
   access:
     url: https://backend-187666-8-1362533733.sh.run.tcloudbase.com/uploads
