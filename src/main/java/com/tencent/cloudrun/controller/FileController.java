@@ -6,6 +6,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -21,27 +23,28 @@ public class FileController {
     private String accessUrl;
 
     @PostMapping("/upload")
-    public String uploadFile(@RequestParam("file") MultipartFile file) throws IOException {
+    public Map<String, String> uploadFile(@RequestParam("file") MultipartFile file) throws IOException {
         if (file.isEmpty()) {
             throw new RuntimeException("上传失败，文件为空");
         }
 
-        // 获取文件后缀
         String originalFilename = file.getOriginalFilename();
         String ext = "";
         if (originalFilename != null && originalFilename.contains(".")) {
             ext = originalFilename.substring(originalFilename.lastIndexOf("."));
         }
 
-        // 生成唯一文件名
         String fileName = UUID.randomUUID().toString() + ext;
 
-        // 保存到本地
-        File dest = new File(uploadDir, fileName);
+        File dest = new File(new File(uploadDir).getAbsolutePath(), fileName);
         dest.getParentFile().mkdirs();
         file.transferTo(dest);
 
-        // 返回文件访问 URL
-        return accessUrl + "/" + fileName;
+        String fileUrl = accessUrl + "/" + fileName;
+
+        Map<String, String> result = new HashMap<>();
+        result.put("url", fileUrl);
+        result.put("filename", fileName);
+        return result;
     }
 }
